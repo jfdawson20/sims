@@ -1,4 +1,4 @@
-COCOTB=/home/jdawson/cocotb/
+COCOTB=/home/jack/Sandbox/cocotb
 
 VERILOG_SOURCES=top.v rmii_mii.v 
 TOPLEVEL=top

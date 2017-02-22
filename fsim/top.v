@@ -2,6 +2,9 @@
 
 module top (
     rst_l,
+    sgmii_tx, 
+    sgmii_rx,
+
     mii_clk,
     rmii_refclk, 
     rmii_txd,
@@ -13,6 +16,8 @@ module top (
     );
 
 input rst_l;
+output sgmii_tx;
+input  sgmii_rx; 
 input mii_clk; 
 input rmii_refclk;
 input [1:0] rmii_txd;
@@ -26,8 +31,15 @@ output [1:0] rmii_rxd;
 
 
 //internal wires
-wire mii_tx_en_to_crs;
-wire [3:0] data;
+wire mii_rx_dv;
+wire mii_rx_er;
+wire mii_rx_crs;
+wire mii_rx_col;
+wire [3:0] mii_rxd;
+
+wire [3:0] mii_txd;
+wire mii_tx_en;
+wire mii_tx_er;
 
 rmii_mii rmii_conv
 (   
@@ -44,18 +56,35 @@ rmii_mii rmii_conv
 
     //mii 
     .mii_rxclk   (mii_clk),
-    .mii_rxd     (data),
-    .mii_rx_dv   (mii_tx_en_to_crs),
-    .mii_rx_er   (1'b0),
-    .mii_crs     (mii_tx_en_to_crs),
-    .mii_col     (1'b0), 
+    .mii_rxd     (mii_rxd),
+    .mii_rx_dv   (mii_rx_dv),
+    .mii_rx_er   (mii_rx_er),
+    .mii_crs     (mii_rx_crs),
+    .mii_col     (mii_rx_col), 
 
     .mii_txclk   (mii_clk), 
-    .mii_txd     (data),
-    .mii_tx_en   (mii_tx_en_to_crs), 
-    .mii_tx_er   ()
+    .mii_txd     (mii_txd),
+    .mii_tx_en   (mii_tx_en), 
+    .mii_tx_er   (mii_tx_er)
 );
 
+mii_sgmii sgmii
+(
+    .rst_l(rst_l),
+    .tx(sgmii_tx),
+    .rx(sgmii_rx), 
+    .mii_rxclk(mii_clk),
+    .mii_rxd(mii_rxd),
+    .mii_rx_dv(mii_rx_dv),
+    .mii_rx_er(mii_rx_er),
+    .mii_rx_crs(mii_rx_crs),
+    .mii_rx_col(mii_rx_col),
+
+    .mii_txclk(mii_clk), 
+    .mii_txd(mii_txd),
+    .mii_tx_en(mii_tx_en),
+    .mii_tx_er(mii_tx_er)
+);
 
 //`ifdef COCOTB_SIM 
 initial begin 

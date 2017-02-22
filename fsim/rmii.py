@@ -146,7 +146,7 @@ class Driver_RMII_MAC():
             
             bytecount += 1
             #arbitrary cutoff if failed to receive data
-            if(bytecount > 20):
+            if(bytecount > 70):
                 break;
 
         #check if we failed to lock to sfd

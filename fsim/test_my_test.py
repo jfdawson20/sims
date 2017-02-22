@@ -66,7 +66,7 @@ def my_first_test(dut):
     mii_mac_clk  = cocotb.fork(sysclk(dut.mii_clk,40000))
     rmii_mac_clk = cocotb.fork(rmii_mac.GenRefClk()) 
 
-    yield Timer(40000)
+    yield Timer(80000)
     dut.rst_l = 1 
     dut._log.info("Releasing Reset")
 

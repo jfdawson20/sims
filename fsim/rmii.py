@@ -93,8 +93,9 @@ class Driver_RMII_MAC():
             else:
                 yield self.WriteByte(frame[i],1,0)
         
-        for i in range(96): 
-            self.WriteByte(0x00,0,1)
+        for i in range(96):
+            #print "sending byte"
+            yield self.WriteByte(0x00,0,1)
 
 
     @cocotb.coroutine
@@ -132,11 +133,13 @@ class Driver_RMII_MAC():
         bytecount = 0
         while True:
             byte = yield self.ReadByte()
+            print hex(byte)
+            print "PRECOUNT:     %s" % hex(precount)
             #log preamble byte detect
             if(byte == 0x55):
                 precount += 1 
 
-            elif(byte == 0xD5): 
+            elif(byte == 0xD5 and precount >= 1): 
                 sfd = 1
                 break;
 
@@ -146,11 +149,11 @@ class Driver_RMII_MAC():
             
             bytecount += 1
             #arbitrary cutoff if failed to receive data
-            if(bytecount > 70):
+            if(bytecount > 7000):
                 break;
 
         #check if we failed to lock to sfd
-        if(bytecount > 20):
+        if(bytecount > 200000):
             raise ReturnValue([-1])
 
         if(precount == 7 and sfd == 1): 

@@ -83,33 +83,33 @@ reg crs_dv_r;
 //rmii to mii (tx)
 always @ (posedge(rmii_refclk)) begin
     if(rst_l == 1'b0) begin
-        mii_data_tx_r1 = 4'b0000;
-        mii_tx_en_r1   = 1'b0;
+        mii_data_tx_r1 <= 4'b0000;
+        mii_tx_en_r1   <= 1'b0;
     end
 
     else if(rmii_refclk == 1'b1) begin
-        mii_data_tx_r1[3:2] = mii_data_tx_r1[1:0];
-        mii_data_tx_r1[1:0] = rmii_txd;
-        mii_tx_en_r1 = rmii_tx_en;
+        mii_data_tx_r1[1:0] <= mii_data_tx_r1[3:2];
+        mii_data_tx_r1[3:2] <= rmii_txd;
+        mii_tx_en_r1 <= rmii_tx_en;
     end
 end
 
 //sync mii to mii tx_clk domain
 always @ (posedge(mii_txclk)) begin
     if(rst_l == 1'b0) begin
-        mii_data_tx_r2 = 4'b0000;
-        mii_data_tx_r3 = 4'b0000;
+        mii_data_tx_r2 <= 4'b0000;
+        mii_data_tx_r3 <= 4'b0000;
 
-        mii_tx_en_r2   = 1'b0;
-        mii_tx_en_r3   = 1'b0;
+        mii_tx_en_r2   <= 1'b0;
+        mii_tx_en_r3   <= 1'b0;
     end
 
     if(mii_txclk == 1'b1) begin
-        mii_data_tx_r2 = mii_data_tx_r1;
-        mii_data_tx_r3 = mii_data_tx_r2;
+        mii_data_tx_r2 <= mii_data_tx_r1;
+        mii_data_tx_r3 <= mii_data_tx_r2;
 
-        mii_tx_en_r2   = mii_tx_en_r1;
-        mii_tx_en_r3   = mii_tx_en_r2;
+        mii_tx_en_r2   <= mii_tx_en_r1;
+        mii_tx_en_r3   <= mii_tx_en_r2;
     end
 
 end
@@ -121,52 +121,52 @@ assign mii_tx_en = mii_tx_en_r3;
 //sync mii rx signals to rmii rx clock domain
 always @ (posedge(rmii_refclk)) begin
     if(rst_l == 1'b0) begin
-        mii_data_rx_r1 = 4'b0000;
-        mii_data_rx_r2 = 4'b0000;
-        mii_crs_r1 = 1'b0;
-        mii_crs_r2 = 1'b0;
+        mii_data_rx_r1 <= 4'b0000;
+        mii_data_rx_r2 <= 4'b0000;
+        mii_crs_r1 <= 1'b0;
+        mii_crs_r2 <= 1'b0;
 
-        mii_rx_dv_r1 = 1'b0;
-        mii_rx_dv_r2 = 1'b0;
+        mii_rx_dv_r1 <= 1'b0;
+        mii_rx_dv_r2 <= 1'b0;
 
-        mii_rx_er_r1 = 1'b0;
-        mii_rx_er_r2 = 1'b0;
+        mii_rx_er_r1 <= 1'b0;
+        mii_rx_er_r2 <= 1'b0;
     end
 
     else if (rmii_refclk == 1'b1) begin
-        mii_data_rx_r1 = mii_rxd;
-        mii_data_rx_r2 = mii_data_rx_r1;
+        mii_data_rx_r1 <= mii_rxd;
+        mii_data_rx_r2 <= mii_data_rx_r1;
 
-        mii_crs_r1 = mii_crs;
-        mii_crs_r2 = mii_crs_r1;
+        mii_crs_r1 <= mii_crs;
+        mii_crs_r2 <= mii_crs_r1;
 
-        mii_rx_dv_r1 = mii_rx_dv;
-        mii_rx_dv_r2 = mii_rx_dv_r1;
+        mii_rx_dv_r1 <= mii_rx_dv;
+        mii_rx_dv_r2 <= mii_rx_dv_r1;
 
-        mii_rx_er_r1 = mii_rx_er;
-        mii_rx_er_r2 = mii_rx_er_r1;
+        mii_rx_er_r1 <= mii_rx_er;
+        mii_rx_er_r2 <= mii_rx_er_r1;
     end
 end
 
 //convert synced mii data to rmii data
 always @ (posedge(rmii_refclk)) begin
     if(rst_l == 1'b0) begin
-        rmii_data_rx_r1 = 2'b00;
-        rmii_crs_dv_r1 = 1'b0;
-        rmii_rx_er_r1  = 1'b0;
-        nib = 1'b0;
+        rmii_data_rx_r1 <= 2'b00;
+        rmii_crs_dv_r1  <= 1'b0;
+        rmii_rx_er_r1   <= 1'b0;
+        nib <= 1'b0;
     end
     else if (rmii_refclk == 1'b1) begin
         if(nib == 1'b0) begin
-            rmii_data_rx_r1[1:0] = mii_data_rx_r2[1:0];
-            nib = 1;
+            rmii_data_rx_r1[1:0] <= mii_data_rx_r2[3:2];
+            nib <= 1;
         end
         else begin
-            rmii_data_rx_r1[1:0] = mii_data_rx_r2[3:2];
-            nib = 0;
+            rmii_data_rx_r1[1:0] <= mii_data_rx_r2[1:0];
+            nib <= 0;
         end
-        rmii_crs_dv_r1 = (mii_crs_r2 | mii_rx_dv_r2);
-        rmii_rx_er_r1  = mii_rx_er_r2;
+        rmii_crs_dv_r1 <= (mii_crs_r2 | mii_rx_dv_r2);
+        rmii_rx_er_r1  <= mii_rx_er_r2;
     end
 end
 

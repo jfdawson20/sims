@@ -68,11 +68,13 @@ rmii_mii rmii_conv
     .mii_tx_er   (mii_tx_er)
 );
 
+
+wire [9:0] tbi_loop;
 mii_sgmii sgmii
 (
     .rst_l(rst_l),
-    .tx(sgmii_tx),
-    .rx(sgmii_rx), 
+    .tbi_out(tbi_loop),
+    .tbi_in(tbi_loop), 
     .mii_rxclk(mii_clk),
     .mii_rxd(mii_rxd),
     .mii_rx_dv(mii_rx_dv),

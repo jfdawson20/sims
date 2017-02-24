@@ -73,7 +73,7 @@ def my_first_test(dut):
     yield Timer(20000)
 
     failed = 0 
-    frames = MakeFrames(15)
+    frames = MakeFrames(100)
     for x in frames:
         rmii_mac_send = cocotb.fork(rmii_mac.SendFrame(eth_preamble+x))
         rxframe = yield rmii_mac.ReadFrame()
